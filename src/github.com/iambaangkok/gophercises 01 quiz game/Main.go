@@ -3,15 +3,31 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"flag"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
 	"strings"
+	"time"
 )
 
 const workDir string = "./src/github.com/iambaangkok/gophercises 01 quiz game/"
 
+func shuffle(data [][]string) {
+	random := rand.New(rand.NewSource(time.Now().UnixNano()))
+	for i := 0; i < len(data); i++ {
+		r := random.Intn(i + 1)
+		data[i], data[r] = data[r], data[i]
+	}
+}
+
 func main() {
+
+	randomizeFlag := flag.Bool("rand", false, "randomize quiz order")
+	flag.Parse()
+
+
 	const problemsFileName = "problems.csv"
     file, err := os.Open(workDir + problemsFileName)
     if err != nil {
@@ -31,6 +47,10 @@ func main() {
 	invalidFormatProblemCount := 0 
 
 	inputReader := bufio.NewReader(os.Stdin)
+
+	if *randomizeFlag {
+		shuffle(problems)
+	}
 
 	for i, problem := range problems {
 		if len(problem) != 2 {
